@@ -1,6 +1,6 @@
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
-import 'utils/custom_emoji_loader.dart';
+import 'utils/emoji_loader.dart';
 
 void main() {
   runApp(const MyApp());
