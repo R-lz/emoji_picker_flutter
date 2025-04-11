@@ -27,6 +27,10 @@
 .pub/
 /build/
 .flutter-plugins-dependencies
+assets/emojis/
+assets/emoji.json
+assets/emoji-img.json
+
 
 # Android related
 **/android/**/gradle-wrapper.jar
