@@ -7,7 +7,7 @@ const _keywordDelimiter = ' | ';
 @immutable
 class Emoji {
   /// Emoji constructor
-  const Emoji(this.emoji, this.name, {this.hasSkinTone = false});
+  const Emoji(this.emoji, this.name, {this.hasSkinTone = false, this.imageUrl});
 
   /// The unicode string for this emoji
   ///
@@ -20,12 +20,15 @@ class Emoji {
   /// Flag if emoji supports multiple skin tones
   final bool hasSkinTone;
 
+  /// Optional image URL for custom emoji
+  final String? imageUrl;
+
   /// List of keywords that describe the emoji
   List<String> get keywords => name.split(_keywordDelimiter);
 
   @override
   String toString() {
-    return 'Emoji: $emoji, Name: $name, HasSkinTone: $hasSkinTone';
+    return 'Emoji: $emoji, Name: $name, HasSkinTone: $hasSkinTone, ImageUrl: $imageUrl';
   }
 
   /// Parse Emoji from json
@@ -35,6 +38,7 @@ class Emoji {
       json['name'] as String,
       hasSkinTone:
           json['hasSkinTone'] != null ? json['hasSkinTone'] as bool : false,
+      imageUrl: json['imageUrl'] as String?,
     );
   }
 
@@ -44,15 +48,18 @@ class Emoji {
       'emoji': emoji,
       'name': name,
       'hasSkinTone': hasSkinTone,
+      'imageUrl': imageUrl,
     };
   }
 
   /// Copy method
-  Emoji copyWith({String? name, String? emoji, bool? hasSkinTone}) {
+  Emoji copyWith(
+      {String? name, String? emoji, bool? hasSkinTone, String? imageUrl}) {
     return Emoji(
       emoji ?? this.emoji,
       name ?? this.name,
       hasSkinTone: hasSkinTone ?? this.hasSkinTone,
+      imageUrl: imageUrl ?? this.imageUrl,
     );
   }
 }

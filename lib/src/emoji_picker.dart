@@ -35,6 +35,30 @@ enum Category {
 
   /// Flag emojis
   FLAGS,
+
+  /// smileys emokis
+  CUSTOM_SMILEYS,
+
+  /// people emokis
+  CUSTOM_PEOPLE,
+
+  /// animals emokis
+  CUSTOM_ANIMALS,
+
+  /// food emokis
+  CUSTOM_FOOD,
+
+  /// travel emokis
+  CUSTOM_TRAVEL,
+
+  /// activities emokis
+  CUSTOM_ACTIVITIES,
+
+  /// objexts emokis
+  CUSTOM_OBJECTS,
+
+  /// symbols emokis
+  CUSTOM_SYMBOLS
 }
 
 /// Extension on Category enum to get its name
@@ -60,6 +84,22 @@ extension CategoryExtension on Category {
         return 'symbols';
       case Category.FLAGS:
         return 'flags';
+      case Category.CUSTOM_SMILEYS:
+        return 'custom_smileys';
+      case Category.CUSTOM_PEOPLE:
+        return 'custom_people';
+      case Category.CUSTOM_ANIMALS:
+        return 'custom_animals';
+      case Category.CUSTOM_FOOD:
+        return 'custom_food';
+      case Category.CUSTOM_TRAVEL:
+        return 'custom_travel';
+      case Category.CUSTOM_ACTIVITIES:
+        return 'custom_activities';
+      case Category.CUSTOM_OBJECTS:
+        return 'custom_objects';
+      case Category.CUSTOM_SYMBOLS:
+        return 'custom_symbols';
     }
   }
 }

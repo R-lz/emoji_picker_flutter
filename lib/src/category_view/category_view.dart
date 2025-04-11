@@ -37,16 +37,32 @@ IconData getIconForCategory(CategoryIcons categoryIcons, Category category) {
       return categoryIcons.animalIcon;
     case Category.FOODS:
       return categoryIcons.foodIcon;
-    case Category.TRAVEL:
-      return categoryIcons.travelIcon;
     case Category.ACTIVITIES:
       return categoryIcons.activityIcon;
+    case Category.TRAVEL:
+      return categoryIcons.travelIcon;
     case Category.OBJECTS:
       return categoryIcons.objectIcon;
     case Category.SYMBOLS:
       return categoryIcons.symbolIcon;
     case Category.FLAGS:
       return categoryIcons.flagIcon;
+    case Category.CUSTOM_SMILEYS:
+      return categoryIcons.customSmileyIcon;
+    case Category.CUSTOM_PEOPLE:
+      return categoryIcons.customPeopleIcon;
+    case Category.CUSTOM_ANIMALS:
+      return categoryIcons.customAnimalIcon;
+    case Category.CUSTOM_FOOD:
+      return categoryIcons.customFoodIcon;
+    case Category.CUSTOM_TRAVEL:
+      return categoryIcons.customTravelIcon;
+    case Category.CUSTOM_ACTIVITIES:
+      return categoryIcons.customActivityIcon;
+    case Category.CUSTOM_OBJECTS:
+      return categoryIcons.customObjectIcon;
+    case Category.CUSTOM_SYMBOLS:
+      return categoryIcons.customSymbolIcon;
   }
 }
 

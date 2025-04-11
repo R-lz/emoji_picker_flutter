@@ -1,0 +1,16 @@
+android {
+    // ... existing code ...
+}
+
+dependencies {
+    // ... existing code ...
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'androidx.window:window:1.0.0'
+    implementation 'androidx.window:window-java:1.0.0'
+    implementation 'androidx.window:window-rxjava2:1.0.0'
+    implementation 'androidx.window:window-rxjava3:1.0.0'
+    implementation 'androidx.window:window-testing:1.0.0'
+    implementation 'androidx.core:core-ktx:1.7.0'
+    implementation 'androidx.appcompat:appcompat:1.4.1'
+    // ... existing code ...
+} 

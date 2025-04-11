@@ -1,5 +1,4 @@
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 /// A widget that represents an individual clickable emoji cell.
@@ -71,96 +70,147 @@ class EmojiCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    onPressed() {
-      onEmojiSelected(categoryEmoji?.category, emoji);
-    }
-
-    onLongPressed() {
-      final renderBox = context.findRenderObject() as RenderBox;
-      final emojiBoxPosition = renderBox.localToGlobal(Offset.zero);
-      onSkinToneDialogRequested?.call(
-        emojiBoxPosition,
-        emoji,
-        emojiSize,
-        categoryEmoji,
-      );
-    }
-
-    return SizedBox(
+    final child = Container(
+      padding: const EdgeInsets.all(0),
       width: emojiBoxSize,
       height: emojiBoxSize,
-      child: _buildButtonWidget(
-        onPressed: onPressed,
-        onLongPressed: onLongPressed,
-        child: _buildEmoji(),
+      child: Center(
+        child: Stack(
+          children: [
+            Center(
+              child: _buildEmojiWidget(),
+            ),
+            if (emoji.hasSkinTone && enableSkinTones)
+              Positioned(
+                right: 0,
+                bottom: 0,
+                child: CustomPaint(
+                  size: const Size(6, 6),
+                  painter: _TrianglePainter(skinToneIndicatorColor),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+
+    return Material(
+      color: Colors.transparent,
+      child: InkResponse(
+        excludeFromSemantics: true,
+        highlightShape: BoxShape.rectangle,
+        onTap: () => onEmojiSelected(categoryEmoji?.category, emoji),
+        onLongPress: onSkinToneDialogRequested == null
+            ? null
+            : () {
+                final renderBox = context.findRenderObject() as RenderBox;
+                final emojiBoxPosition = renderBox.localToGlobal(Offset.zero);
+                onSkinToneDialogRequested!(
+                  emojiBoxPosition,
+                  emoji,
+                  emojiSize,
+                  categoryEmoji,
+                );
+              },
+        child: child,
       ),
     );
   }
 
-  /// Build different Button based on ButtonMode
-  Widget _buildButtonWidget({
-    required VoidCallback onPressed,
-    VoidCallback? onLongPressed,
-    required Widget child,
-  }) {
-    if (buttonMode == ButtonMode.MATERIAL) {
-      return MaterialButton(
-        onPressed: onPressed,
-        onLongPress: onLongPressed,
-        elevation: 0,
-        highlightElevation: 0,
-        padding: EdgeInsets.zero,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.zero,
-        ),
-        child: child,
-      );
+  Widget _buildEmojiWidget() {
+    final effectiveSize = emojiSize > 0 ? emojiSize : 28.0;
+
+    if (emoji.imageUrl == null || emoji.imageUrl!.isEmpty) {
+      return _buildFallbackText(effectiveSize);
     }
-    if (buttonMode == ButtonMode.CUPERTINO) {
-      return GestureDetector(
-        onLongPress: onLongPressed,
-        child: CupertinoButton(
-          onPressed: onPressed,
-          padding: EdgeInsets.zero,
-          alignment: Alignment.center,
-          child: child,
-        ),
-      );
+
+    final url = emoji.imageUrl!;
+    if (_isNetworkUrl(url)) {
+      return _buildNetworkImage(url, effectiveSize);
+    } else if (_isAssetUrl(url)) {
+      return _buildAssetImage(url, effectiveSize);
     }
-    return GestureDetector(
-      onLongPress: onLongPressed,
-      onTap: onPressed,
-      child: Center(child: child),
-    );
+
+    return _buildFallbackText(effectiveSize);
   }
 
-  /// Build and display Emoji centered of its parent
-  Widget _buildEmoji() {
-    final emojiText = Text(
-      emoji.emoji,
-      textScaler: const TextScaler.linear(1.0),
-      style: _getEmojiTextStyle(),
-    );
+  bool _isNetworkUrl(String url) {
+    return url.startsWith('https://') || url.startsWith('http://');
+  }
 
-    return emoji.hasSkinTone &&
-            enableSkinTones &&
-            onSkinToneDialogRequested != null
-        ? Container(
-            decoration: TriangleDecoration(
-              color: skinToneIndicatorColor,
-              size: 8.0,
+  bool _isAssetUrl(String url) {
+    return url.startsWith('asset://') || !url.contains('://');
+  }
+
+  Widget _buildNetworkImage(String url, double size) {
+    return Image.network(
+      url,
+      width: size,
+      height: size,
+      fit: BoxFit.contain,
+      errorBuilder: (context, error, stackTrace) {
+        return _buildFallbackText(size);
+      },
+      loadingBuilder: (context, child, loadingProgress) {
+        if (loadingProgress == null) return child;
+        return SizedBox(
+          width: size,
+          height: size,
+          child: const Center(
+            child: CircularProgressIndicator(
+              strokeWidth: 1.4,
             ),
-            child: emojiText,
-          )
-        : emojiText;
+          ),
+        );
+      },
+    );
   }
 
-  TextStyle _getEmojiTextStyle() {
-    final defaultStyle = DefaultEmojiTextStyle.copyWith(
-      fontSize: emojiSize,
-      inherit: true,
+  Widget _buildAssetImage(String url, double size) {
+    final assetPath =
+        url.startsWith('asset://') ? url.replaceFirst('asset://', '') : url;
+    return Image.asset(
+      assetPath,
+      width: size,
+      height: size,
+      fit: BoxFit.contain,
+      errorBuilder: (context, error, stackTrace) {
+        return _buildFallbackText(size);
+      },
     );
-    // textStyle properties have priority over defaultStyle
-    return textStyle == null ? defaultStyle : defaultStyle.merge(textStyle);
   }
+
+  Widget _buildFallbackText(double size) {
+    final effectiveStyle =
+        textStyle?.copyWith(fontSize: size) ?? TextStyle(fontSize: size);
+    return Text(
+      emoji.emoji.isNotEmpty ? emoji.emoji : '🙂',
+      style: effectiveStyle,
+    );
+  }
+}
+
+class _TrianglePainter extends CustomPainter {
+  final Color color;
+
+  _TrianglePainter(this.color);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.fill;
+
+    final path = Path()
+      ..moveTo(0, 0)
+      ..lineTo(size.width, size.height)
+      ..lineTo(0, size.height)
+      ..close();
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(_TrianglePainter oldDelegate) =>
+      color != oldDelegate.color;
 }
